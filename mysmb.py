@@ -115,7 +115,7 @@ class MYSMB(smb.SMB):
 		self._last_tid = 0  # last tid from connect_tree()
 		self._last_fid = 0  # last fid from nt_create_andx()
 		self._smbConn = None
-		smb.SMB.__init__(self, remote_host, remote_host, timeout=timeout)
+		super(MYSMB, self).__init__(remote_host, remote_host, timeout=timeout)
 
 	def set_pid(self, pid):
 		self._pid = pid
@@ -144,30 +144,30 @@ class MYSMB(smb.SMB):
 
 	# override SMB.neg_session() to allow forcing ntlm authentication
 	def neg_session(self, extended_security=True, negPacket=None):
-		smb.SMB.neg_session(self, extended_security=self.__use_ntlmv2, negPacket=negPacket)
+		super(MYSMB, self).neg_session(self, extended_security=self.__use_ntlmv2, negPacket=negPacket)
 
 	# to use any login method, SMB must not be used from multiple thread
 	def login(self, user, password, domain='', lmhash='', nthash='', ntlm_fallback=True, maxBufferSize=None):
 		_setup_login_packet_hook(maxBufferSize)
-		smb.SMB.login(self, user, password, domain, lmhash, nthash, ntlm_fallback)
+		super(MYSMB, self).login(user, password, domain, lmhash, nthash, ntlm_fallback)
 
 	def login_standard(self, user, password, domain='', lmhash='', nthash='', maxBufferSize=None):
 		_setup_login_packet_hook(maxBufferSize)
-		smb.SMB.login_standard(self, user, password, domain, lmhash, nthash)
+		super(MYSMB, self).login_standard(user, password, domain, lmhash, nthash)
 
 	def login_extended(self, user, password, domain='', lmhash='', nthash='', use_ntlmv2=True, maxBufferSize=None):
 		_setup_login_packet_hook(maxBufferSize)
-		smb.SMB.login_extended(self, user, password, domain, lmhash, nthash, use_ntlmv2)
+		super(MYSMB, self).login_extended(user, password, domain, lmhash, nthash, use_ntlmv2)
 
 	def connect_tree(self, path, password=None, service=smb.SERVICE_ANY, smb_packet=None):
-		self._last_tid = smb.SMB.tree_connect_andx(self, path, password, service, smb_packet)
+		self._last_tid = super(MYSMB, self).tree_connect_andx(path, password, service, smb_packet)
 		return self._last_tid
 
 	def get_last_tid(self):
 		return self._last_tid
 
 	def nt_create_andx(self, tid, filename, smb_packet=None, cmd=None, shareAccessMode=smb.FILE_SHARE_READ|smb.FILE_SHARE_WRITE, disposition=smb.FILE_OPEN, accessMask=0x2019f):
-		self._last_fid = smb.SMB.nt_create_andx(self, tid, filename, smb_packet, cmd, shareAccessMode, disposition, accessMask)
+		self._last_fid = super(MYSMB, self).nt_create_andx(tid, filename, smb_packet, cmd, shareAccessMode, disposition, accessMask)
 		return self._last_fid
 
 	def get_last_fid(self):
